@@ -1,0 +1,164 @@
+openapi: 3.0.3
+info:
+  title: Cryptocurrency Tracking Microservice
+  description: A microservice for tracking, storing, and displaying cryptocurrency prices
+  version: 1.0.0
+servers:
+  - url: http://localhost:8001
+    description: Local development server
+
+paths:
+  /currency/add:
+    post:
+      tags:
+        - Currency
+      summary: Add cryptocurrency to watchlist
+      description: Adds a cryptocurrency to the watchlist and starts collecting its price at regular intervals.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCurrencyRequest'
+      responses:
+        '200':
+          description: Cryptocurrency successfully added to watchlist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request
+        '404':
+          description: Symbol not found
+        '500':
+          description: Internal server error
+
+  /currency/remove:
+    post:
+      tags:
+        - Currency
+      summary: Remove cryptocurrency from watchlist
+      description: Removes a cryptocurrency from the watchlist and stops collecting its price.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveCurrencyRequest'
+      responses:
+        '200':
+          description: Cryptocurrency successfully removed from watchlist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request
+        '404':
+          description: Symbol not found
+        '500':
+          description: Internal server error
+
+  /currency/price:
+    post:
+      tags:
+        - Currency
+      summary: Get cryptocurrency price
+      description: Returns the price of a cryptocurrency at a specific timestamp or the nearest available.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PriceRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceResponse'
+        '400':
+          description: Invalid request
+        '404':
+          description: Price data not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    AddCurrencyRequest:
+      type: object
+      required:
+        - coin
+        - interval
+      properties:
+        coin:
+          type: string
+          description: Cryptocurrency symbol (e.g., BTC, ETH)
+          example: BTC
+        interval:
+          type: integer
+          description: Collection interval in seconds
+          example: 60
+
+    RemoveCurrencyRequest:
+      type: object
+      required:
+        - coin
+      properties:
+        coin:
+          type: string
+          description: Cryptocurrency symbol to remove
+          example: BTC
+
+    PriceRequest:
+      type: object
+      required:
+        - coin
+        - timestamp
+      properties:
+        coin:
+          type: string
+          description: Cryptocurrency symbol
+          example: BTC
+        timestamp:
+          type: integer
+          description: UNIX timestamp for the requested price
+          example: 1736500490
+
+    PriceResponse:
+      type: object
+      required:
+        - coin
+        - price
+        - timestamp
+      properties:
+        coin:
+          type: string
+          description: Cryptocurrency symbol
+          example: BTC
+        price:
+          type: string
+          format: float
+          description: Price at the returned timestamp
+          example: 42500.75
+        timestamp:
+          type: integer
+          description: UNIX timestamp of the returned price
+          example: 1736500490
+
+    SuccessResponse:
+      type: object
+      required:
+        - message
+        - success
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "BTC successfully added to watchlist"
+

@@ -1,0 +1,7 @@
+version: '3'
+tasks:
+  api-gen:
+    cmd: rm -f api/api.gen.go && go tool oapi-codegen -config ./cfg-api.yaml ./spec/openapi.yaml
+
+  sqlgen:
+   cmd: go tool sqlc generate
