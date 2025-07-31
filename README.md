@@ -1,5 +1,5 @@
 # Crypto API
-Использовано API CoinMarketCap
+Использовано API CoinMarketCap (https://coinmarketcap.com/api/)
 
 ## Запуск
 Необходимо скопировать .env.example в .env и заменить переменную CMC_API_KEY на актуальное значение
